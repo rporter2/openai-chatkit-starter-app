@@ -363,9 +363,8 @@ export function ChatKitPanel({
       workflowId,
       botKey,
     });
-  }
-
-  return (
+  
+return (
   <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
     {/* Character portrait header */}
     <div className="pt-6 pb-4 flex flex-col items-center gap-2">
