@@ -4,6 +4,7 @@ export const bots = {
     title: "Sarah Delgado – Sunshine City Mentor",
     subtitle: "Your friendly mentor helping you practice Business English in Miami.",
     placeholder: "Ask Sarah about your career or English...",
+    greeting: "Hi, I’m Sarah.",
     avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e1.png",
   },
   lily: {
@@ -11,6 +12,7 @@ export const bots = {
     title: "Lily Martinez – Social Media Guide",
     subtitle: "Ask Lily about social media content, trends, and influencer life.",
     placeholder: "Ask Lily about posts, trends, or ideas...",
+    greeting: "Hi, I’m Lily.",
     avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e2.png",
   },
   manny: {
@@ -18,6 +20,7 @@ export const bots = {
     title: "Manny Menu – Food Truck Menu",
     subtitle: "Talk to Manny about street food, flavor, and taste of Miami.",
     placeholder: "Ask Manny about flavors...",
+    greeting: "Hi, I’m Manny.",
     avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e3.png",
   },
   // ...add more bots here over time
