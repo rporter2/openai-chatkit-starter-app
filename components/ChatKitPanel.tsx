@@ -12,6 +12,7 @@ import {
 } from "@/lib/config";
 import { ErrorOverlay } from "./ErrorOverlay";
 import type { ColorScheme } from "@/hooks/useColorScheme";
+import { bots, type BotKey } from "@/lib/bots";
 
 export type FactAction = {
   type: "save";
@@ -62,6 +63,13 @@ export function ChatKitPanel({
   );
   const [widgetInstanceKey, setWidgetInstanceKey] = useState(0);
 
+  // 🔹 NEW: track which bot is active (default: sarah)
+  const [botKey, setBotKey] = useState<BotKey>("sarah");
+  const bot = bots[botKey] ?? bots.sarah;
+
+  // 🔹 NEW: derive actual workflowId (bot-specific or env fallback)
+  const workflowId = bot.workflowId || WORKFLOW_ID;
+
   const setErrorState = useCallback((updates: Partial<ErrorState>) => {
     setErrors((current) => ({ ...current, ...updates }));
   }, []);
@@ -70,6 +78,18 @@ export function ChatKitPanel({
     return () => {
       isMountedRef.current = false;
     };
+  }, []);
+
+  // 🔹 NEW: read ?bot= from URL on mount
+  useEffect(() => {
+    if (!isBrowser) return;
+
+    const params = new URLSearchParams(window.location.search);
+    const key = params.get("bot") as BotKey | null;
+
+    if (key && key in bots) {
+      setBotKey(key);
+    }
   }, []);
 
   useEffect(() => {
@@ -131,14 +151,14 @@ export function ChatKitPanel({
     };
   }, [scriptStatus, setErrorState]);
 
-  const isWorkflowConfigured = Boolean(
-    WORKFLOW_ID && !WORKFLOW_ID.startsWith("wf_replace")
-  );
+  const isWorkflowConfigured =
+    Boolean(workflowId) && !workflowId.startsWith("wf_replace");
 
   useEffect(() => {
     if (!isWorkflowConfigured && isMountedRef.current) {
       setErrorState({
-        session: "Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID in your .env.local file.",
+        session:
+          "No workflow configured. Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID or add a workflowId for this bot.",
         retryable: false,
       });
       setIsInitializingSession(false);
@@ -162,14 +182,15 @@ export function ChatKitPanel({
       if (isDev) {
         console.info("[ChatKitPanel] getClientSecret invoked", {
           currentSecretPresent: Boolean(currentSecret),
-          workflowId: WORKFLOW_ID,
+          workflowId,
           endpoint: CREATE_SESSION_ENDPOINT,
+          botKey,
         });
       }
 
       if (!isWorkflowConfigured) {
         const detail =
-          "Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID in your .env.local file.";
+          "No workflow configured. Set NEXT_PUBLIC_CHATKIT_WORKFLOW_ID or add a workflowId for this bot.";
         if (isMountedRef.current) {
           setErrorState({ session: detail, retryable: false });
           setIsInitializingSession(false);
@@ -191,7 +212,7 @@ export function ChatKitPanel({
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
-            workflow: { id: WORKFLOW_ID },
+            workflow: { id: workflowId },
             chatkit_configuration: {
               // enable attachments
               file_upload: {
@@ -258,7 +279,7 @@ export function ChatKitPanel({
         }
       }
     },
-    [isWorkflowConfigured, setErrorState]
+    [isWorkflowConfigured, setErrorState, workflowId, botKey]
   );
 
   const chatkit = useChatKit({
@@ -272,7 +293,7 @@ export function ChatKitPanel({
       prompts: STARTER_PROMPTS,
     },
     composer: {
-      placeholder: PLACEHOLDER_INPUT,
+      placeholder: bot.placeholder || PLACEHOLDER_INPUT,
       attachments: {
         // Enable attachments
         enabled: true,
@@ -339,12 +360,13 @@ export function ChatKitPanel({
       hasControl: Boolean(chatkit.control),
       scriptStatus,
       hasError: Boolean(blockingError),
-      workflowId: WORKFLOW_ID,
+      workflowId,
+      botKey,
     });
   }
 
   return (
-    <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+    <div className="relative pb-8 flex h[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
