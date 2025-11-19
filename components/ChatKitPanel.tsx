@@ -366,7 +366,28 @@ export function ChatKitPanel({
   }
 
   return (
-    <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+  <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+    {/* Character portrait header */}
+    <div className="pt-6 pb-4 flex flex-col items-center gap-2">
+      {bot.avatarUrl && (
+        <img
+          src={bot.avatarUrl}
+          alt={bot.title}
+          className="h-24 w-24 rounded-full border border-slate-200 shadow-md object-cover"
+        />
+      )}
+      <div className="text-center">
+        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          {bot.title}
+        </div>
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          {bot.subtitle}
+        </div>
+      </div>
+    </div>
+
+    {/* Chat area fills the rest of the card */}
+    <div className="flex-1">
       <ChatKit
         key={widgetInstanceKey}
         control={chatkit.control}
@@ -376,19 +397,20 @@ export function ChatKitPanel({
             : "block h-full w-full"
         }
       />
-      <ErrorOverlay
-        error={blockingError}
-        fallbackMessage={
-          blockingError || !isInitializingSession
-            ? null
-            : "Loading assistant session..."
-        }
-        onRetry={blockingError && errors.retryable ? handleResetChat : null}
-        retryLabel="Restart chat"
-      />
     </div>
-  );
-}
+
+    <ErrorOverlay
+      error={blockingError}
+      fallbackMessage={
+        blockingError || !isInitializingSession
+          ? null
+          : "Loading assistant session..."
+      }
+      onRetry={blockingError && errors.retryable ? handleResetChat : null}
+      retryLabel="Restart chat"
+    />
+  </div>
+);
 
 function extractErrorDetail(
   payload: Record<string, unknown> | undefined,
