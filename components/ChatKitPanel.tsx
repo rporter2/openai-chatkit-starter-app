@@ -300,7 +300,7 @@ export function ChatKitPanel({
       placeholder,
       attachments: {
         // Enable attachments
-        enabled: true,
+        enabled: false,
       },
     },
     threadItemActions: {
