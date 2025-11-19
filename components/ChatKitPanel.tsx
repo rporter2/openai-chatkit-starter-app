@@ -63,11 +63,11 @@ export function ChatKitPanel({
   );
   const [widgetInstanceKey, setWidgetInstanceKey] = useState(0);
 
-  // 🔹 NEW: track which bot is active (default: sarah)
+  // Which bot is active (default to sarah)
   const [botKey, setBotKey] = useState<BotKey>("sarah");
   const bot = bots[botKey] ?? bots.sarah;
 
-  // 🔹 NEW: derive actual workflowId (bot-specific or env fallback)
+  // Use bot-specific workflowId if present, otherwise env fallback
   const workflowId = bot.workflowId || WORKFLOW_ID;
 
   const setErrorState = useCallback((updates: Partial<ErrorState>) => {
@@ -80,7 +80,7 @@ export function ChatKitPanel({
     };
   }, []);
 
-  // 🔹 NEW: read ?bot= from URL on mount
+  // Read ?bot= from URL on mount
   useEffect(() => {
     if (!isBrowser) return;
 
@@ -345,7 +345,7 @@ export function ChatKitPanel({
       processedFacts.current.clear();
     },
     onError: ({ error }: { error: unknown }) => {
-      // Note that Chatkit UI handles errors for your users.
+      // Note that ChatKit UI handles errors for your users.
       // Thus, your app code doesn't need to display errors on UI.
       console.error("ChatKit error", error);
     },
@@ -363,53 +363,55 @@ export function ChatKitPanel({
       workflowId,
       botKey,
     });
-  
-return (
-  <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
-    {/* Character portrait header */}
-    <div className="pt-6 pb-4 flex flex-col items-center gap-2">
-      {bot.avatarUrl && (
-        <img
-          src={bot.avatarUrl}
-          alt={bot.title}
-          className="h-24 w-24 rounded-full border border-slate-200 shadow-md object-cover"
-        />
-      )}
-      <div className="text-center">
-        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-          {bot.title}
-        </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
-          {bot.subtitle}
+  }
+
+  return (
+    <div className="relative pb-8 flex h-[90vh] w-full rounded-2xl flex-col overflow-hidden bg-white shadow-sm transition-colors dark:bg-slate-900">
+      {/* Character portrait header */}
+      <div className="pt-6 pb-4 flex flex-col items-center gap-2">
+        {bot.avatarUrl && (
+          <img
+            src={bot.avatarUrl}
+            alt={bot.title}
+            className="h-24 w-24 rounded-full border border-slate-200 shadow-md object-cover"
+          />
+        )}
+        <div className="text-center">
+          <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+            {bot.title}
+          </div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">
+            {bot.subtitle}
+          </div>
         </div>
       </div>
-    </div>
 
-    {/* Chat area fills the rest of the card */}
-    <div className="flex-1">
-      <ChatKit
-        key={widgetInstanceKey}
-        control={chatkit.control}
-        className={
-          blockingError || isInitializingSession
-            ? "pointer-events-none opacity-0"
-            : "block h-full w-full"
+      {/* Chat area fills the rest */}
+      <div className="flex-1">
+        <ChatKit
+          key={widgetInstanceKey}
+          control={chatkit.control}
+          className={
+            blockingError || isInitializingSession
+              ? "pointer-events-none opacity-0"
+              : "block h-full w-full"
+          }
+        />
+      </div>
+
+      <ErrorOverlay
+        error={blockingError}
+        fallbackMessage={
+          blockingError || !isInitializingSession
+            ? null
+            : "Loading assistant session..."
         }
+        onRetry={blockingError && errors.retryable ? handleResetChat : null}
+        retryLabel="Restart chat"
       />
     </div>
-
-    <ErrorOverlay
-      error={blockingError}
-      fallbackMessage={
-        blockingError || !isInitializingSession
-          ? null
-          : "Loading assistant session..."
-      }
-      onRetry={blockingError && errors.retryable ? handleResetChat : null}
-      retryLabel="Restart chat"
-    />
-  </div>
-);
+  );
+}
 
 function extractErrorDetail(
   payload: Record<string, unknown> | undefined,
