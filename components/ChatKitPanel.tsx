@@ -67,6 +67,10 @@ export function ChatKitPanel({
   const [botKey, setBotKey] = useState<BotKey>("sarah");
   const bot = bots[botKey] ?? bots.sarah;
 
+  // Per-bot greeting & placeholder
+  const greeting = bot.greeting || GREETING;
+  const placeholder = bot.placeholder || PLACEHOLDER_INPUT;
+
   // Use bot-specific workflowId if present, otherwise env fallback
   const workflowId = bot.workflowId || WORKFLOW_ID;
 
@@ -289,11 +293,11 @@ export function ChatKitPanel({
       ...getThemeConfig(theme),
     },
     startScreen: {
-      greeting: GREETING,
-      prompts: STARTER_PROMPTS,
+      greeting,
+      prompts: STARTER_PROMPTS, // will be [] once you clear them in config.ts
     },
     composer: {
-      placeholder: bot.placeholder || PLACEHOLDER_INPUT,
+      placeholder,
       attachments: {
         // Enable attachments
         enabled: true,
@@ -345,7 +349,7 @@ export function ChatKitPanel({
       processedFacts.current.clear();
     },
     onError: ({ error }: { error: unknown }) => {
-      // Note that ChatKit UI handles errors for your users.
+      // Note that Chatkit UI handles errors for your users.
       // Thus, your app code doesn't need to display errors on UI.
       console.error("ChatKit error", error);
     },
