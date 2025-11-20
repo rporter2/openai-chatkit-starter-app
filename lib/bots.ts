@@ -24,15 +24,15 @@ export const bots = {
     avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e3.png",
   },
   ricky: {
-    workflowId: "",
+    workflowId: "wf_691eb16417848190a6d090adf33ad8710d33f9dcf40a281d",
     title: "",
     subtitle: "",
     placeholder: "",
-    greeting: "Hi, I’m ricky.",
+    greeting: "Hi, I’m Ricky.",
     avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e4.png",
   },
   preston: {
-    workflowId: "",
+    workflowId: "wf_691eb228245c8190886782a084b8b62a0ac2002a39b7a3e9",
     title: "",
     subtitle: "",
     placeholder: "",
