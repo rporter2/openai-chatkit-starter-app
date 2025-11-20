@@ -23,6 +23,23 @@ export const bots = {
     greeting: "Hi, I’m Manny.",
     avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e3.png",
   },
+  ricky: {
+    workflowId: "",
+    title: "",
+    subtitle: "",
+    placeholder: "",
+    greeting: "Hi, I’m ricky.",
+    avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e4.png",
+  },
+  preston: {
+    workflowId: "",
+    title: "",
+    subtitle: "",
+    placeholder: "",
+    greeting: "Hi, I’m Preston.",
+    avatarUrl: "https://www.characteracademy.us/assets/npcs/c1/q1e5.png",
+  },
+
   // ...add more bots here over time
 } as const;
 
